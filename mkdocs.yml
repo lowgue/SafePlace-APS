@@ -1,0 +1,27 @@
+site_name: SafePlace
+site_description: Sistema de Segurança do Trabalho
+theme:
+  name: material
+  language: pt-BR
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - toc.integrate
+plugins:
+  - search
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - plantuml_markdown
+  - pymdownx.tabbed:
+      alternate_style: true
+  - attr_list
+  - md_in_html
+  - def_list
+nav:
+  - Início: DESCRICAO_PROJETO.md
+  - Requisitos Funcionais: RequisitosFuncionais.md
+  - Arquitetura e RNF: RFN_Aquitetura.md
+  - Casos de Uso: CasosDeUSo.md
+  - Diagrama de Classes: DiagramaClasses.md
