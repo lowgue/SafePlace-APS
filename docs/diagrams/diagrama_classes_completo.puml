@@ -221,6 +221,8 @@ together {
     + buscarTarefas()
     + validarAlocacaoFuncionario()
     + vincularEPIs(listaEPIs)
+    + desvincularEPI(idEPI)
+    + validarEPIsObrigatorios()
   }
 }
 
@@ -233,7 +235,7 @@ together {
     + carregarDetalhes()
     + vincularAnexos()
     + desvincularItem(idItem)
-    + validarJustificativa(justificativa)
+    + validarJustificativa(justificativa)@@
   }
   class Incidente {
     - potencialDano: String

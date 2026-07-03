@@ -48,7 +48,7 @@ A modelagem do SafePlace está dividida em 6 grandes módulos funcionais. Abaixo
 | **`Certificacao`** | `nome`, `status`, `dataVencimento`, `dataEmissao` | Associação com `Funcionario` (0..* para 1)<br>Associação com `Treinamento` (1..* para 1) |
 | **`AtestadoSaude`** | `dataEmissao`, `tipo`, `dataVencimento`, `apto` | Associação com `Funcionario` (1..* para 1) |
 | **`Treinamento`** | `nome`, `conteudo`, `instrutor`, `dataRealizacao`, `cargaHoraria` | Associação com `Funcionario` (0..* para 0..*)<br>Associação com `Certificacao` (1 para 1..*)<br>Associação com `GestorDeSeguranca` (1 para 0..*) |
-| **`Tarefa`** | `descricao`, `status`<br><br>*Métodos:*<br>`buscarTarefas()`<br>`validarAlocacaoFuncionario()`<br>`vincularEPIs(listaEPIs)` | Associação com `Setor` (1..* para 1)<br>Associação com `AreaDeRisco` (0..* para 0..1)<br>Associação com `Ocorrencia` (0..1 para 0..*)<br>Associação com `EPI` (1..* para 0..*) |
+| **`Tarefa`** | `descricao`, `status`<br><br>*Métodos:*<br>`buscarTarefas()`<br>`validarAlocacaoFuncionario()`<br>`vincularEPIs(listaEPIs)`<br>`desvincularEPI(idEPI)`<br>`validarEPIsObrigatorios()` | Associação com `Setor` (1..* para 1)<br>Associação com `AreaDeRisco` (0..* para 0..1)<br>Associação com `Ocorrencia` (0..1 para 0..*)<br>Associação com `EPI` (1..* para 0..*) |
 
 ---
 

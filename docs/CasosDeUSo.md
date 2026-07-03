@@ -317,6 +317,38 @@ Pós-condições
 | Selecionar uma tarefa            | Apresentar lista de EPIs disponíveis       |
 | Selecionar e confirmar a associação | Validar os dados e persistir a matriz   |
 
+> **Regras de Negócio e Validações:** Uma tarefa crítica não pode ser salva sem ao menos um EPI obrigatório vinculado. O sistema deve validar se o EPI selecionado está com CA e validade em dia antes da associação.
+
+### Cenário Alternativo I — Desvincular EPI da Tarefa
+
+| Ações do Ator                                 | Ações do Sistema                                    |
+| :-------------------------------------------- | :-------------------------------------------------- |
+| Acessar uma tarefa com EPIs já vinculados     | Exibir a lista de EPIs associados                   |
+| Selecionar a opção de remover o vínculo do EPI| Validar se a tarefa permite a remoção do EPI        |
+| Confirmar a exclusão                          | Atualizar a matriz de risco e confirmar a remoção   |
+
+### Cenário Alternativo II — Filtrar Tarefas
+
+| Ações do Ator                                 | Ações do Sistema                                    |
+| :-------------------------------------------- | :-------------------------------------------------- |
+| Acessar o painel de filtros na tela de tarefas| Exibir opções de filtro (status, setor, risco)      |
+| Selecionar os critérios desejados e buscar    | Atualizar a lista de tarefas exibida                |
+
+### Cenário de Exceção I — EPI Inválido ou Vencido
+
+| Ações do Ator                                 | Ações do Sistema                                                        |
+| :-------------------------------------------- | :---------------------------------------------------------------------- |
+| Selecionar um EPI e confirmar a associação    | O sistema valida a validade (CA e condições) do EPI selecionado         |
+| —                                             | O sistema detecta que o EPI está vencido ou inadequado                  |
+| —                                             | Bloqueia a associação e exibe mensagem de erro justificando o motivo    |
+
+### Cenário de Exceção II — Tarefa sem EPI Obrigatório
+
+| Ações do Ator                                 | Ações do Sistema                                                        |
+| :-------------------------------------------- | :---------------------------------------------------------------------- |
+| Tentar salvar uma tarefa de risco sem EPIs    | O sistema executa a validação de EPIs obrigatórios para a tarefa        |
+| —                                             | O sistema detecta a ausência e bloqueia a ação, exigindo a associação   |
+
 ---
 
 ## UC09 — Simular Cenários de Emergência
