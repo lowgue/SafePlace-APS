@@ -1,384 +1,367 @@
 @startuml DiagramaClasses
 
-skinparam class {
-  BackgroundColor White
-  BorderColor Black
-  ArrowColor Black
-  FontSize 12
-}
-skinparam packageStyle rectangle
+skinparam monochrome true
+hide circle
+skinparam classAttributeIconSize 0
 skinparam linetype ortho
-skinparam nodesep 70
-skinparam ranksep 90
+skinparam nodesep 60
+skinparam ranksep 70
+skinparam padding 12
 skinparam shadowing false
+skinparam classFontSize 18
+skinparam classAttributeFontSize 15
 
-enum ClassificacaoEmprestimo {
-  Aberto
-  Disponivel
-  EmUso
-  EmDevolucao
+together {
+  enum ClassificacaoEmprestimo {
+    Aberto
+    Disponivel
+    EmUso
+    EmDevolucao
+  }
+  enum EstadoManutencao {
+    NaValidade
+    EmManutencao
+    ForaDaValidade
+  }
+  enum ClassificacaoEPI {
+    ProtecaoContraQuedas
+    ProtecaoMembrosInferiores
+    ProtecaoMembrosSuperiores
+    ProtecaoTronco
+    ProtecaoRespiratoria
+    ProtecaoAuditiva
+    ProtecaoOlhos
+    ProtecaoFace
+    ProtecaoCabeca
+  }
+  enum StatusFuncionario {
+    Indisponivel
+    Disponivel
+    EmTarefa
+    EmFerias
+    Afastado
+  }
+  enum NivelPerigo {
+    Baixo
+    Medio
+    Critico
+  }
+  enum TipoSensor {
+    PresencaEProximidade
+    Gases
+    QualidadeDoAr
+    Ambientes
+    Movimento
+    Vibracao
+    Radiacao
+  }
 }
 
-enum EstadoManutencao {
-  NaValidade
-  EmManutencao
-  ForaDaValidade
+together {
+  class ItemVerificado {
+    - descricao: String
+    - dataVerificacao: Date
+    - conforme: boolean
+    - observacoes: String
+  }
+  class Inspecao {
+    - dataInspecao: Date
+    - responsavel: String
+    - conformidade: boolean
+    - observacoes: String
+  }
+  class GestorDeSeguranca {
+    - email: String
+    - senha: String
+  }
+  class AlertaComportamento {
+    - dataEmissao: Date
+    - nivelGravidade: NivelPerigo
+    - mensagemNotificacao: String
+    - lidoPeloGestor: boolean
+  }
+  class PlanoDeAcao {
+    - medidasCorretivas: String
+    - prazo: Date
+    - status: String
+    - medidasPreventivas: String
+  }
 }
 
-enum ClassificacaoEPI {
-  ProtecaoContraQuedas
-  ProtecaoMembrosInferiores
-  ProtecaoMembrosSuperiores
-  ProtecaoTronco
-  ProtecaoRespiratoria
-  ProtecaoAuditiva
-  ProtecaoOlhos
-  ProtecaoFace
-  ProtecaoCabeca
+together {
+  class Sensor {
+    - localizacao: String
+    - tipo: TipoSensor
+  }
+  class AlertaSensor {
+    - dataEmissao: Date
+    - nivelLeitura: String
+    - mensagem: String
+    - lidoPeloGestor: boolean
+  }
+  class AreaDeRisco {
+    - nome: String
+    - status: NivelPerigo
+  }
+  class Setor {
+    - nome: String
+    - descricao: String
+    - localizacao: String
+    - status: String
+    --
+    + obterDadosPlanta()
+    + validarLimitesSetor()
+    + validarSaidasCadastradas()
+    + bloquearZonaDeImpacto()
+    + verificarRotasUteis()
+    + aplicarBloqueioTotais()
+  }
+  class SaidaEmergencia {
+    - idSaida: int
+    - capacidadeEvacuacao: String
+    - localizacao: String
+    - estaDesobstruida: boolean
+    --
+    + definirBloqueio()
+  }
+  class SimulacaoEmergencia {
+    - idSimulacao: int
+    - dataRealizacao: Date
+    - tempoEvacuacaoPrat: String
+    - eficacia: String
+  }
+  class Vulnerabilidade {
+    - descricao: String
+    - local: String
+  }
+  class ServicoDeRoteamento {
+    - reguaVelocidade: String
+    - algoritmoBusca: String
+    --
+    + executarBuscaDeCaminho()
+    + calcularTempoEstimado()
+    + identificarGargalos()
+    + recolocarRotas()
+    + gerarComparativoRealESimulado()
+  }
+  class RotaSaida {
+    - caminho: String
+    - distanciaTotal: String
+    - tempoEstimado: String
+    - status: String
+    --
+    + calcularTempoEstimado()
+    + estaBloqueada()
+  }
+  class Gargalo {
+    - localizacao: String
+    - descricao: String
+    - gravidade: String
+  }
 }
 
-enum StatusFuncionario {
-  Indisponivel
-  Disponivel
-  EmTarefa
-  EmFerias
-  Afastado
+together {
+  class Funcionario {
+    - cpf: String
+    - nome: String
+    - dataAdmissao: Date
+    - funcao: String
+    - classificacao: StatusFuncionario
+    - historicoComportamento: String
+    --
+    + estaApto()
+    + atualizarStatusAptidao()
+  }
+  class Certificacao {
+    - nome: String
+    - status: String
+    - dataVencimento: Date
+    - dataEmissao: Date
+  }
+  class AtestadoSaude {
+    - dataEmissao: Date
+    - tipo: String
+    - dataVencimento: Date
+    - apto: boolean
+  }
+  class Treinamento {
+    - nome: String
+    - conteudo: String
+    - instrutor: String
+    - dataRealizacao: Date
+    - cargaHoraria: int
+  }
+  class Tarefa {
+    - descricao: String
+    - status: String
+    --
+    + validarAlocacaoFuncionario()
+  }
 }
 
-enum NivelPerigo {
-  Baixo
-  Medio
-  Critico
+together {
+  class Ocorrencia {
+    - dataOcorrencia: Date
+    - local: String
+    - descricao: String
+  }
+  class Incidente {
+    - potencialDano: String
+  }
+  class Acidente {
+    - causaRaiz: String
+    - tipo: String
+  }
+  class CAT {
+    - numeroProtocolo: String
+    - destino: String
+  }
+  class OrgaoDestino {
+    - nome: String
+    - cnpj: String
+    - endereco: String
+  }
+  class Testemunha {
+    - nome: String
+    - documentoIdentificacao: String
+    - depoimento: String
+    - contato: String
+  }
+  class MidiaAnexa {
+    - nomeArquivo: String
+    - tipoMidia: String
+    - caminhoArquivo: String
+    - dataUpload: Date
+  }
 }
 
-enum TipoSensor {
-  PresencaEProximidade
-  Gases
-  QualidadeDoAr
-  Ambientes
-  Movimento
-  Vibracao
-  Radiacao
-}
-
-class ItemVerificado {
-  - descricao: String
-  - dataVerificacao: Date
-  - conforme: boolean
-  - observacoes: String
-}
-
-class Inspecao {
-  - dataInspecao: Date
-  - responsavel: String
-  - conformidade: boolean
-  - observacoes: String
-}
-
-class GestorDeSeguranca {
-  - email: String
-  - senha: String
-}
-
-class AlertaComportamento {
-  - dataEmissao: Date
-  - nivelGravidade: NivelPerigo
-  - mensagemNotificacao: String
-  - lidoPeloGestor: boolean
-}
-
-class PlanoDeAcao {
-  - medidasCorretivas: String
-  - prazo: Date
-  - status: String
-  - medidasPreventivas: String
-}
-
-class Sensor {
-  - localizacao: String
-  - tipo: TipoSensor
-}
-
-class AlertaSensor {
-  - dataEmissao: Date
-  - nivelLeitura: String
-  - mensagem: String
-  - lidoPeloGestor: boolean
-}
-
-class AreaDeRisco {
-  - nome: String
-  - status: NivelPerigo
-}
-
-class Setor {
-  - nome: String
-  - descricao: String
-  - localizacao: String
-  - status: String
-  --
-  + obterDadosPlanta()
-  + validarLimitesSetor()
-  + validarSaidasCadastradas()
-  + bloquearZonaDeImpacto()
-  + verificarRotasUteis()
-  + aplicarBloqueioTotais()
-}
-
-class SaidaEmergencia {
-  - idSaida: int
-  - capacidadeEvacuacao: String
-  - localizacao: String
-  - estaDesobstruida: boolean
-  --
-  + definirBloqueio()
-}
-
-class SimulacaoEmergencia {
-  - idSimulacao: int
-  - dataRealizacao: Date
-  - tempoEvacuacaoPrat: String
-  - eficacia: String
-}
-
-class Vulnerabilidade {
-  - descricao: String
-  - local: String
-}
-
-class ServicoDeRoteamento {
-  - reguaVelocidade: String
-  - algoritmoBusca: String
-  --
-  + executarBuscaDeCaminho()
-  + calcularTempoEstimado()
-  + identificarGargalos()
-  + recolocarRotas()
-  + gerarComparativoRealESimulado()
-}
-
-class RotaSaida {
-  - caminho: String
-  - distanciaTotal: String
-  - tempoEstimado: String
-  - status: String
-  --
-  + calcularTempoEstimado()
-  + estaBloqueada()
-}
-
-class Gargalo {
-  - localizacao: String
-  - descricao: String
-  - gravidade: String
-}
-
-class Funcionario {
-  - cpf: String
-  - nome: String
-  - dataAdmissao: Date
-  - funcao: String
-  - classificacao: StatusFuncionario
-  - historicoComportamento: String
-  --
-  + estaApto()
-  + atualizarStatusAptidao()
-}
-
-class Certificacao {
-  - nome: String
-  - status: String
-  - dataVencimento: Date
-  - dataEmissao: Date
-}
-
-class AtestadoSaude {
-  - dataEmissao: Date
-  - tipo: String
-  - dataVencimento: Date
-  - apto: boolean
-}
-
-class Treinamento {
-  - nome: String
-  - conteudo: String
-  - instrutor: String
-  - dataRealizacao: Date
-  - cargaHoraria: int
-}
-
-class Tarefa {
-  - descricao: String
-  - status: String
-  --
-  + validarAlocacaoFuncionario()
-}
-
-class Ocorrencia {
-  - dataOcorrencia: Date
-  - local: String
-  - descricao: String
-}
-
-class Incidente {
-  - potencialDano: String
-}
-
-class Acidente {
-  - causaRaiz: String
-  - tipo: String
-}
-
-class CAT {
-  - numeroProtocolo: String
-  - destino: String
-}
-
-class OrgaoDestino {
-  - nome: String
-  - cnpj: String
-  - endereco: String
-}
-
-class Testemunha {
-  - nome: String
-  - documentoIdentificacao: String
-  - depoimento: String
-  - contato: String
-}
-
-class MidiaAnexa {
-  - nomeArquivo: String
-  - tipoMidia: String
-  - caminhoArquivo: String
-  - dataUpload: Date
-}
-
-class Emprestimo {
-  - dataRetirada: Date
-  - dataDevolucaoPrevista: Date
-  - dataDevolucaoReal: Date
-  - status: ClassificacaoEmprestimo
-  --
-  + obterHistoricoUsoFrequencia()
-}
-
-class EPI {
-  - ca: String
-  - nome: String
-  - status: ClassificacaoEPI
-  - validade: Date
-  - dataFornecimento: Date
-  - dataPrevisaoDescarte: Date
-  --
-  + obterDataValidadeCondicoes()
-  + verificarValidadeCA()
-  + atualizarPrevisaoDescarte()
-}
-
-class Fornecedor {
-  - cnpj: String
-  - razaoSocial: String
-  - representante: String
-  - email: String
-  - telefone: String
-}
-
-class EntradaEstoque {
-  - numeroNf: String
-  - dataFiscal: Date
-  - valorUnitario: double
-}
-
-class MovimentacaoEstoque {
-  - data: Date
-  - quantidade: int
-  - situacao: String
-  - motivo: String
-  --
-  + atualizarQuantidadeMov()
-}
-
-class Estoque {
-  - quantAtual: int
-  - quantMinima: int
-  - localizacao: String
-  --
-  + compararComQuantMinima()
-  + validarCustoHistoricoConsumo()
-}
-
-class ProjecaoSubstituicao {
-  - dataProjecao: Date
-  - dataEstimadaDescarte: Date
-  - quantidadeCalculada: int
-  - justificativa: String
-}
-
-class Manutencao_EPI {
-  - dataManutencao: Date
-  - descricaoManutencao: String
-  - resultadoManutencao: boolean
+together {
+  class Emprestimo {
+    - dataRetirada: Date
+    - dataDevolucaoPrevista: Date
+    - dataDevolucaoReal: Date
+    - status: ClassificacaoEmprestimo
+    --
+    + obterHistoricoUsoFrequencia()
+  }
+  class EPI {
+    - ca: String
+    - nome: String
+    - status: ClassificacaoEPI
+    - validade: Date
+    - dataFornecimento: Date
+    - dataPrevisaoDescarte: Date
+    --
+    + obterDataValidadeCondicoes()
+    + verificarValidadeCA()
+    + atualizarPrevisaoDescarte()
+  }
+  class Fornecedor {
+    - cnpj: String
+    - razaoSocial: String
+    - representante: String
+    - email: String
+    - telefone: String
+  }
+  class EntradaEstoque {
+    - numeroNf: String
+    - dataFiscal: Date
+    - valorUnitario: double
+  }
+  class MovimentacaoEstoque {
+    - data: Date
+    - quantidade: int
+    - situacao: String
+    - motivo: String
+    --
+    + atualizarQuantidadeMov()
+  }
+  class Estoque {
+    - quantAtual: int
+    - quantMinima: int
+    - localizacao: String
+    --
+    + compararComQuantMinima()
+    + validarCustoHistoricoConsumo()
+  }
+  class ProjecaoSubstituicao {
+    - dataProjecao: Date
+    - dataEstimadaDescarte: Date
+    - quantidadeCalculada: int
+    - justificativa: String
+  }
+  class Manutencao_EPI {
+    - dataManutencao: Date
+    - descricaoManutencao: String
+    - resultadoManutencao: boolean
+  }
 }
 
 ' ===================== RELACIONAMENTOS =====================
 
-Inspecao -- "0..*" ItemVerificado
-GestorDeSeguranca -- "0..*" Inspecao
-Inspecao *-- "0..*" MidiaAnexa
-AreaDeRisco "1..*" -- "0..*" Inspecao
-Funcionario -- "0..*" AlertaComportamento
-GestorDeSeguranca -- "0..*" AlertaComportamento
-GestorDeSeguranca -- "0..1" PlanoDeAcao
-GestorDeSeguranca -- "0..*" Ocorrencia
-GestorDeSeguranca -- "1..*" AreaDeRisco
-GestorDeSeguranca -- "0..*" AlertaSensor
-GestorDeSeguranca -- Treinamento
-GestorDeSeguranca -- "0..*" MovimentacaoEstoque
+Inspecao -- " 0..* " ItemVerificado
+Inspecao *-- " 0..* " MidiaAnexa
 
-AreaDeRisco -- "0..*" Sensor
-Sensor -- "0..*" AlertaSensor
-AreaDeRisco "0..1" -- "0..*" Tarefa
+GestorDeSeguranca -- " 0..* " Inspecao
+GestorDeSeguranca -- " 0..* " AlertaComportamento
+GestorDeSeguranca -- " 0..1 " PlanoDeAcao
+GestorDeSeguranca -- " 0..* " Ocorrencia
+GestorDeSeguranca -- " 1..* " AreaDeRisco
+GestorDeSeguranca -- " 0..* " AlertaSensor
+GestorDeSeguranca -- Treinamento
+GestorDeSeguranca -- " 0..* " MovimentacaoEstoque
+
+AreaDeRisco -- " 0..* " Sensor
+AreaDeRisco -- " 0..* " Tarefa
+AreaDeRisco -- " 1..* " SimulacaoEmergencia
+AreaDeRisco -- " 0..* " SaidaEmergencia
+AreaDeRisco -- " 0..* " Ocorrencia
+AreaDeRisco " 1..* " -- " 0..* " Inspecao
+
+Sensor -- " 0..* " AlertaSensor
 Setor -- AreaDeRisco
-AreaDeRisco -- "1..*" SimulacaoEmergencia
-AreaDeRisco -- "0..*" SaidaEmergencia
-AreaDeRisco "0..1" -- "0..*" Ocorrencia
-Setor "1..*" -- "1..*" Tarefa
-Setor -- "0..*" ServicoDeRoteamento
-Setor "1..*" -- "0..*" Funcionario
-SimulacaoEmergencia -- "0..*" SaidaEmergencia
-SimulacaoEmergencia -- "0..*" Vulnerabilidade
+Setor " 1..* " -- " 1..* " Tarefa
+Setor -- " 0..* " ServicoDeRoteamento
+Setor " 1..* " -- " 0..* " Funcionario
+
+SimulacaoEmergencia -- " 0..* " SaidaEmergencia
+SimulacaoEmergencia -- " 0..* " Vulnerabilidade
+
 ServicoDeRoteamento ..> RotaSaida : <<use>>
 ServicoDeRoteamento ..> Gargalo : <<use>>
-RotaSaida *-- "0..*" Gargalo
+RotaSaida *-- " 0..* " Gargalo
 
 Funcionario <|-- GestorDeSeguranca
-Funcionario -- "0..*" Certificacao
-Funcionario -- "0..*" AtestadoSaude
-Funcionario "1..*" -- "0..*" Treinamento
-Funcionario "1..*" -- Tarefa
-Funcionario -- "0..*" Ocorrencia
-Funcionario -- "0..*" Emprestimo
-Treinamento -- "1..*" Certificacao
+Funcionario -- " 0..* " Certificacao
+Funcionario -- " 0..* " AtestadoSaude
+Funcionario " 1..* " -- " 0..* " Treinamento
+Funcionario " 1..* " -- Tarefa
+Funcionario -- " 0..* " Ocorrencia
+Funcionario -- " 0..* " Emprestimo
+Funcionario -- " 0..* " AlertaComportamento
+Treinamento -- " 1..* " Certificacao
 
 Ocorrencia <|-- Incidente
 Ocorrencia <|-- Acidente
-Ocorrencia -- "0..*" Testemunha
-Ocorrencia -- "0..*" MidiaAnexa
-Ocorrencia "0..*" -- "0..*" PlanoDeAcao
-Ocorrencia "0..*" -- "0..*" EPI
-Ocorrencia "0..*" -- "0..1" Tarefa
-Acidente -- "0..1" CAT
-CAT "1..*" -- OrgaoDestino
+Ocorrencia -- " 0..* " Testemunha
+Ocorrencia -- " 0..* " MidiaAnexa
+Ocorrencia " 0..* " -- " 0..* " PlanoDeAcao
+Ocorrencia " 0..* " -- " 0..* " EPI
+Ocorrencia " 0..* " -- " 0..1 " Tarefa
 
-EPI -- "0..*" Emprestimo
-EPI "1..*" -- "1..*" Fornecedor
-Estoque *-- "1..*" EPI
-EPI -- "0..*" ProjecaoSubstituicao
-EPI -- "0..*" Manutencao_EPI
-Fornecedor -- "0..*" EntradaEstoque
+Acidente -- " 0..1 " CAT
+CAT " 1..* " -- OrgaoDestino
+
+EPI -- " 0..* " Emprestimo
+EPI " 1..* " -- " 1..* " Fornecedor
+EPI -- " 0..* " ProjecaoSubstituicao
+EPI -- " 0..* " Manutencao_EPI
+
+Estoque *-- " 1..* " EPI
+Estoque -- " 0..* " MovimentacaoEstoque
+
+Fornecedor -- " 0..* " EntradaEstoque
 MovimentacaoEstoque <|-- EntradaEstoque
-Estoque -- "0..*" MovimentacaoEstoque
-Tarefa "0..*" -- "1..*" EPI
+Tarefa " 0..* " -- " 1..* " EPI
 
 @enduml
