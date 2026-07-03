@@ -1,0 +1,37 @@
+@startuml
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 14
+skinparam roundcorner 10
+skinparam maxmessagesize 120
+
+actor "GestorDeSeguranca" as Gestor
+participant "Módulo Tarefas" as UI
+participant "Tarefa" as Tarefa
+participant "EPI" as EPI
+database "Banco de Dados" as DB
+
+== Fluxo Principal: Interligação ==
+Gestor -> UI : Acessar módulo
+UI -> Tarefa : buscarTarefas()
+Tarefa -> DB : SELECT * FROM Tarefa
+DB --> Tarefa : lista
+Tarefa --> UI : dadosExibicao
+UI --> Gestor : Exibir tarefas
+
+Gestor -> UI : Selecionar tarefa
+UI -> EPI : listarDisponiveis()
+EPI -> DB : buscarTodos()
+DB --> EPI : lista
+EPI --> UI : dadosExibicao
+UI --> Gestor : Mostrar EPIs disponíveis
+
+Gestor -> UI : Selecionar EPIs e confirmar associação
+UI -> Tarefa : vincularEPIs(listaEPIs)
+Tarefa -> Tarefa : validarAlocacaoFuncionario()
+Tarefa -> DB : salvarMatrizRisco(Tarefa, EPIs)
+DB --> Tarefa : ok
+Tarefa --> UI : sucesso
+UI --> Gestor : Associação confirmada
+@enduml

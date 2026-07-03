@@ -1,0 +1,50 @@
+@startuml
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 14
+skinparam roundcorner 10
+skinparam maxmessagesize 120
+
+actor "Sensor" as Sensor
+participant "Receptor IoT" as Receptor
+participant "AlertaSensor" as Alerta
+participant "AreaDeRisco" as Area
+database "Banco de Dados" as DB
+actor "GestorDeSeguranca" as Gestor
+participant "Painel de Alertas" as UI
+
+== Recepção de Dados e Geração Automática ==
+alt Recepção Sucesso
+  Sensor -> Receptor : enviarDados(leitura)
+  Receptor -> Area : processarLeitura(leitura)
+  Area -> Area : avaliarNivelPerigo()
+  opt Risco Detectado
+    Area -> Alerta : criarAlerta(dados)
+    Alerta -> DB : salvar()
+  end
+else Cenário de Exceção I: Falha de Comunicação
+  Receptor -> Receptor : detectarTimeout()
+  Receptor -> UI : gerarAlertaFalha(ultimoDado)
+  Gestor -> UI : tentarReconectar()
+  UI -> Sensor : restabelecerComunicacao()
+  Sensor --> UI : falha/sucesso
+end
+
+== Monitoramento ==
+Gestor -> UI : Acessar monitoramento
+UI -> Alerta : buscarAlertasAtivos()
+Alerta -> DB : SELECT * FROM AlertaSensor WHERE lidoPeloGestor = false
+DB --> Alerta : lista<AlertaSensor>
+Alerta --> UI : listaFormatada
+UI --> Gestor : Exibir Alertas
+
+opt Cenário Alternativo I: Filtrar Alertas
+  Gestor -> UI : Acionar painel de filtros (nível, sensor)
+  UI -> Alerta : filtrarAlertas(criterio)
+  Alerta -> DB : buscarPorFiltro(criterio)
+  DB --> Alerta : listaFiltrada
+  Alerta --> UI : novaLista
+  UI --> Gestor : Atualizar listagem exibida
+end
+@enduml

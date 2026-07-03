@@ -1,0 +1,56 @@
+@startuml
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 14
+skinparam roundcorner 10
+skinparam maxmessagesize 120
+
+actor "GestorDeSeguranca" as Gestor
+participant "UI: Interface EPIs" as UI
+participant "Estoque" as Estoque
+participant "EPI" as EPI
+participant "Manutencao_EPI" as Manutencao
+database "Banco de Dados" as DB
+
+== Fluxo Principal: Listar EPIs ==
+Gestor -> UI : Acessar módulo de EPIs
+UI -> Estoque : listarEPIs()
+Estoque -> DB : buscarTodosAtivos()
+DB --> Estoque : lista<EPI>
+
+loop Para cada EPI
+  Estoque -> EPI : obterDataValidadeCondicoes()
+  EPI -> EPI : verificarValidadeCA()
+end
+Estoque --> UI : listaEPIsFormatada
+UI --> Gestor : Exibir EPIs com status
+
+== Cenário Alternativo I: Filtrar EPIs ==
+opt Gestor deseja filtrar
+  Gestor -> UI : Acessar filtros e selecionar critério (ex: vencidos)
+  UI -> Estoque : filtrarEPIs(criterio)
+  Estoque -> DB : buscarPorCriterio(criterio)
+  DB --> Estoque : lista<EPI>
+  Estoque --> UI : listaAtualizada
+  UI --> Gestor : Exibir lista filtrada
+end
+
+== Consultar Detalhes ==
+Gestor -> UI : Consultar detalhes (id_epi)
+UI -> EPI : carregarDetalhes(id_epi)
+EPI -> DB : buscar(id_epi)
+
+alt Cenário de Exceção I: EPI não encontrado
+  DB --> EPI : nulo
+  EPI --> UI : erroNaoEncontrado
+  UI --> Gestor : Exibir mensagem de erro
+else EPI Encontrado
+  DB --> EPI : dadosEPI
+  EPI -> DB : buscarManutencoes()
+  DB --> EPI : lista<Manutencao_EPI>
+  EPI --> UI : detalhesEPI
+  UI --> Gestor : Exibir histórico de manutenção
+  Gestor -> Gestor : Analisar a situação
+end
+@enduml

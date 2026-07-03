@@ -1,0 +1,51 @@
+@startuml
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 14
+skinparam roundcorner 10
+skinparam maxmessagesize 120
+
+actor "GestorDeSeguranca" as Gestor
+participant "UI: Ocorrência" as UI
+participant "Ocorrencia" as Ocorrencia
+participant "MidiaAnexa" as Midia
+participant "Testemunha" as Testemunha
+database "Banco de Dados" as DB
+
+Gestor -> UI : Acessar ocorrência existente
+UI -> Ocorrencia : carregarDetalhes()
+Ocorrencia -> DB : buscarOcorrencia()
+DB --> Ocorrencia : dados
+Ocorrencia --> UI : dadosExibicao
+
+alt Fluxo Principal: Anexar Dados
+  Gestor -> UI : Inserir testemunha e selecionar arquivo
+  
+  alt Cenário de Exceção I: Formato/Tamanho Inválido
+    UI -> Midia : anexarArquivo(arquivo)
+    Midia -> Midia : validarFormatoTamanho()
+    Midia --> UI : erroValidacao
+    UI --> Gestor : Exibir mensagem de erro e orientações
+  else Arquivo Válido
+    UI -> Testemunha : registrarDepoimento(dados)
+    Testemunha -> DB : salvar()
+    UI -> Midia : anexarArquivo(arquivo)
+    Midia -> Midia : validarFormatoTamanho()
+    Midia -> DB : salvar()
+    UI -> Ocorrencia : vincularAnexos()
+    Ocorrencia -> DB : atualizarRelacionamentos()
+    Ocorrencia --> UI : sucesso
+    UI --> Gestor : Ocorrência atualizada
+  end
+  
+else Cenário Alternativo I: Remover Item Anexado
+  Gestor -> UI : Selecionar item para remover + justificativa
+  UI -> Ocorrencia : validarJustificativa(justificativa)
+  Ocorrencia -> Ocorrencia : desvincularItem(idItem)
+  Ocorrencia -> DB : deletar/arquivarItem(idItem)
+  Ocorrencia -> DB : registrarHistoricoRemocao()
+  Ocorrencia --> UI : sucesso
+  UI --> Gestor : Interface atualizada sem o item
+end
+@enduml

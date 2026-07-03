@@ -69,6 +69,8 @@ together {
     - responsavel: String
     - conformidade: boolean
     - observacoes: String
+    --
+    + carregarDetalhes()
   }
   class GestorDeSeguranca {
     - email: String
@@ -85,6 +87,10 @@ together {
     - prazo: Date
     - status: String
     - medidasPreventivas: String
+    --
+    + criarPlano(dados)
+    + atualizar(novosDados)
+    + carregarFormulario()
   }
 }
 
@@ -92,16 +98,33 @@ together {
   class Sensor {
     - localizacao: String
     - tipo: TipoSensor
+    --
+    + restabelecerComunicacao()
+  }
+  class ReceptorIoT {
+    - statusConexao: String
+    - ultimoDadoRecebido: Date
+    --
+    + detectarTimeout()
+    + gerarAlertaFalha(ultimoDado)
+    + enviarDados(leitura)
   }
   class AlertaSensor {
     - dataEmissao: Date
     - nivelLeitura: String
     - mensagem: String
     - lidoPeloGestor: boolean
+    --
+    + criarAlerta(dados)
+    + buscarAlertasAtivos()
+    + filtrarAlertas(criterio)
   }
   class AreaDeRisco {
     - nome: String
     - status: NivelPerigo
+    --
+    + processarLeitura(leitura)
+    + avaliarNivelPerigo()
   }
   class Setor {
     - nome: String
@@ -195,7 +218,9 @@ together {
     - descricao: String
     - status: String
     --
+    + buscarTarefas()
     + validarAlocacaoFuncionario()
+    + vincularEPIs(listaEPIs)
   }
 }
 
@@ -204,6 +229,11 @@ together {
     - dataOcorrencia: Date
     - local: String
     - descricao: String
+    --
+    + carregarDetalhes()
+    + vincularAnexos()
+    + desvincularItem(idItem)
+    + validarJustificativa(justificativa)
   }
   class Incidente {
     - potencialDano: String
@@ -226,12 +256,17 @@ together {
     - documentoIdentificacao: String
     - depoimento: String
     - contato: String
+    --
+    + registrarDepoimento(dados)
   }
   class MidiaAnexa {
     - nomeArquivo: String
     - tipoMidia: String
     - caminhoArquivo: String
     - dataUpload: Date
+    --
+    + anexarArquivo(arquivo)
+    + validarFormatoTamanho()
   }
 }
 
@@ -252,6 +287,7 @@ together {
     - dataFornecimento: Date
     - dataPrevisaoDescarte: Date
     --
+    + listarDisponiveis()
     + obterDataValidadeCondicoes()
     + verificarValidadeCA()
     + atualizarPrevisaoDescarte()
@@ -301,6 +337,7 @@ together {
 
 Inspecao -- " 0..* " ItemVerificado
 Inspecao *-- " 0..* " MidiaAnexa
+Inspecao " 0..* " -- " 0..* " PlanoDeAcao
 
 GestorDeSeguranca -- " 0..* " Inspecao
 GestorDeSeguranca -- " 0..* " AlertaComportamento
@@ -319,6 +356,7 @@ AreaDeRisco -- " 0..* " Ocorrencia
 AreaDeRisco " 1..* " -- " 0..* " Inspecao
 
 Sensor -- " 0..* " AlertaSensor
+Sensor " 1..* " -- " 0..1 " ReceptorIoT
 Setor -- AreaDeRisco
 Setor " 1..* " -- " 1..* " Tarefa
 Setor -- " 0..* " ServicoDeRoteamento

@@ -1,0 +1,59 @@
+@startuml
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 14
+skinparam roundcorner 10
+skinparam maxmessagesize 120
+
+actor "GestorDeSeguranca" as Gestor
+participant "Painel Planos" as UI
+participant "Ocorrencia" as Ocorrencia
+participant "Inspecao" as Inspecao
+participant "PlanoDeAcao" as Plano
+database "Banco de Dados" as DB
+
+alt Fluxo Principal: Criar Plano
+  Gestor -> UI : Acessar painel
+  UI -> DB : buscarPendenciasSemPlano()
+  DB --> UI : listaEventos
+  Gestor -> UI : Selecionar evento
+  
+  alt É Ocorrência
+    UI -> Ocorrencia : carregarDetalhes(id)
+    Ocorrencia -> DB : buscar()
+    alt Cenário de Exceção I: Origem não encontrada
+      DB --> Ocorrencia : nulo
+      Ocorrencia --> UI : erro404
+      UI --> Gestor : Exibir erro e retornar à lista
+    else
+      DB --> Ocorrencia : dados
+      Ocorrencia --> UI : dadosOrigem
+    end
+  else É Inspeção
+    UI -> Inspecao : carregarDetalhes(id)
+    Inspecao -> DB : buscar()
+    DB --> Inspecao : dados
+    Inspecao --> UI : dadosOrigem
+  end
+  UI --> Gestor : Exibir detalhes
+  Gestor -> UI : Definir medidas e prazo
+  UI -> Plano : criarPlano(dados)
+  Plano -> DB : salvarVinculandoOrigem()
+  Plano --> UI : sucesso
+  UI --> Gestor : Plano criado
+  
+else Cenário Alternativo I: Atualizar Plano
+  Gestor -> UI : Acessar plano existente
+  UI -> Plano : carregarFormulario()
+  Plano -> DB : buscar()
+  DB --> Plano : dados
+  Plano --> UI : dadosFormulario
+  Gestor -> UI : Alterar status/prazo
+  UI -> Plano : atualizar(novosDados)
+  Plano -> DB : salvarHistoricoDeAlteracoes()
+  Plano -> DB : update()
+  Plano --> UI : sucesso
+  UI --> Gestor : Plano atualizado
+end
+@enduml

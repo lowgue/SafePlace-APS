@@ -1,0 +1,51 @@
+@startuml
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 14
+skinparam roundcorner 10
+skinparam maxmessagesize 120
+
+actor "GestorDeSeguranca" as Gestor
+participant "Menu Estoque" as UI
+participant "Estoque" as Estoque
+participant "MovimentacaoEstoque" as Movimentacao
+database "Banco de Dados" as DB
+
+Gestor -> UI : Acessar Menu
+UI -> Estoque : carregarEstoque()
+Estoque -> DB : buscarSaldos()
+DB --> Estoque : saldos
+
+alt Cenário Alternativo I: Estoque Vazio
+  Estoque -> Estoque : verificarQuantidade()
+  Estoque --> UI : vazio
+  UI --> Gestor : Exibir "Nenhum EPI cadastrado"
+else Estoque com Itens
+  loop Para cada item
+    Estoque -> Estoque : compararComQuantMinima()
+  end
+  Estoque --> UI : listaFormatada
+  UI --> Gestor : Exibir estoque
+end
+
+Gestor -> UI : Atualizar quantidade
+UI -> Movimentacao : registrarMovimentacao(dados)
+Movimentacao -> Movimentacao : atualizarQuantidadeMov()
+Movimentacao -> Estoque : atualizarSaldo()
+
+alt Cenário de Exceção I: Falha de Integridade
+  Estoque -> DB : update(saldo)
+  DB --> Estoque : erroConcorrencia
+  Estoque --> Movimentacao : falha
+  Movimentacao --> UI : erro
+  UI --> Gestor : Cancelar transação e exibir mensagem de erro
+else Sucesso
+  Estoque -> DB : update(saldo)
+  DB --> Estoque : ok
+  Estoque --> Movimentacao : sucesso
+  Movimentacao -> DB : salvarHistorico()
+  Movimentacao --> UI : sucesso
+  UI --> Gestor : Estoque atualizado
+end
+@enduml
