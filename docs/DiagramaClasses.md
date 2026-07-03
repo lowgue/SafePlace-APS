@@ -26,7 +26,7 @@ A modelagem do SafePlace está dividida em 6 grandes módulos funcionais. Abaixo
 
 | Classe | Atributos e Métodos | Relacionamentos Principais |
 | :--- | :--- | :--- |
-| **`Sensor`** | `localizacao`, `tipo: TipoSensor`<br><br>*Métodos:*<br>`restabelecerComunicacao()` | Associação com `AreaDeRisco` (0..* para 1)<br>Associação com `AlertaSensor` (1 para 0..*)<br>Associação com `ReceptorIoT` (1..* para 0..1) |
+| **`Sensor`** | `localizacao`, `tipo: TipoSensor` | Associação com `AreaDeRisco` (0..* para 1)<br>Associação com `AlertaSensor` (1 para 0..*)<br>Associação com `ReceptorIoT` (1..* para 0..1) |
 | **`ReceptorIoT`** | `statusConexao`, `ultimoDadoRecebido`<br><br>*Métodos:*<br>`detectarTimeout()`<br>`gerarAlertaFalha(ultimoDado)`<br>`enviarDados(leitura)` | Associação com `Sensor` (0..1 para 1..*) |
 | **`AlertaSensor`** | `dataEmissao`, `nivelLeitura`, `mensagem`, `lidoPeloGestor`<br><br>*Métodos:*<br>`criarAlerta(dadosLeitura)`<br>`buscarAlertasAtivos()`<br>`filtrarAlertas(criterio)` | Associação com `Sensor` (0..* para 1)<br>Associação com `GestorDeSeguranca` (0..* para 1) |
 | **`AreaDeRisco`** | `nome`, `status: NivelPerigo`<br><br>*Métodos:*<br>`processarLeitura(leitura)`<br>`avaliarNivelPerigo()` | Associação com `Sensor` (1 para 0..*)<br>Associação com `Tarefa` (0..1 para 0..*)<br>Associação com `Setor` (1 para 1)<br>Associação com `SimulacaoEmergencia` (1 para 1..*)<br>Associação com `SaidaEmergencia` (1 para 0..*)<br>Associação com `Inspecao` (1..* para 0..*)<br>Associação com `Ocorrencia` (0..1 para 0..*)<br>Associação com `GestorDeSeguranca` (1..* para 1) |

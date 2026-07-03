@@ -98,8 +98,6 @@ together {
   class Sensor {
     - localizacao: String
     - tipo: TipoSensor
-    --
-    + restabelecerComunicacao()
   }
   class ReceptorIoT {
     - statusConexao: String

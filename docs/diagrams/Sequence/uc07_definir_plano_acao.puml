@@ -8,21 +8,19 @@ skinparam maxmessagesize 120
 
 actor ":GestorDeSeguranca" as Gestor
 boundary ":PainelPlanos" as UI
-entity ":Ocorrencia" as Ocorrencia
-entity ":Inspecao" as Inspecao
-entity ":PlanoDeAcao" as Plano
 database ":BancoDeDados" as DB
 
 alt Fluxo Principal: Criar Plano
   Gestor -> UI ++ : Acessar painel
-  UI -> DB ++ : buscarPendenciasSemPlano()
+  UI -> DB ++ : Buscar pendências sem plano
   DB --> UI -- : listaEventos
   deactivate UI
   Gestor -> UI ++ : Selecionar evento
-  
+
   alt É Ocorrência
+    create "ocorrencia1:Ocorrencia" as Ocorrencia
     UI -> Ocorrencia ++ : obterDadosCompletos(id)
-    Ocorrencia -> DB ++ : buscar()
+    Ocorrencia -> DB ++ : Buscar dados da ocorrência
     alt Cenário de Exceção I: Origem não encontrada
       DB --> Ocorrencia -- : nulo
       Ocorrencia --> UI -- : erro404
@@ -32,31 +30,33 @@ alt Fluxo Principal: Criar Plano
       Ocorrencia --> UI -- : dadosOrigem
     end
   else É Inspeção
+    create "inspecao1:Inspecao" as Inspecao
     UI -> Inspecao ++ : obterDadosCompletos(id)
-    Inspecao -> DB ++ : buscar()
+    Inspecao -> DB ++ : Buscar dados da inspeção
     DB --> Inspecao -- : dados
     Inspecao --> UI -- : dadosOrigem
   end
   UI --> Gestor -- : Exibir detalhes
   Gestor -> UI ++ : Definir medidas e prazo
+  create "plano1:PlanoDeAcao" as Plano
   UI -> Plano ++ : criarPlano(dados)
-  Plano -> DB ++ : salvarVinculandoOrigem()
+  Plano -> DB ++ : Salvar vinculando origem
   deactivate DB
   Plano --> UI -- : sucesso
   UI --> Gestor -- : Plano criado
-  
+
 else Cenário Alternativo I: Atualizar Plano
   Gestor -> UI ++ : Acessar plano existente
   UI -> Plano ++ : obterDadosParaEdicao()
-  Plano -> DB ++ : buscar()
+  Plano -> DB ++ : Buscar dados do plano
   DB --> Plano -- : dados
   Plano --> UI -- : dadosFormulario
   deactivate UI
   Gestor -> UI ++ : Alterar status/prazo
   UI -> Plano ++ : atualizar(novosDados)
-  Plano -> DB ++ : salvarHistoricoDeAlteracoes()
+  Plano -> DB ++ : Salvar histórico de alterações
   deactivate DB
-  Plano -> DB ++ : update()
+  Plano -> DB ++ : Atualizar plano
   deactivate DB
   Plano --> UI -- : sucesso
   UI --> Gestor -- : Plano atualizado

@@ -5,22 +5,23 @@ skinparam defaultFontName Arial
 skinparam defaultFontSize 14
 skinparam roundcorner 10
 skinparam maxmessagesize 120
+
 actor ":Sensor" as Sensor
-control ":ReceptorIoT" as Receptor
-entity ":AlertaSensor" as Alerta
-entity ":AreaDeRisco" as Area
-database ":BancoDeDados" as DB
 actor ":GestorDeSeguranca" as Gestor
 boundary ":PainelAlertas" as UI
+control ":ReceptorIoT" as Receptor
+entity ":AreaDeRisco" as Area
+database ":BancoDeDados" as DB
 
 == Recepção de Dados e Geração Automática ==
 alt Recepção Sucesso
-  Sensor -> Receptor ++ : enviarDados(leitura)
+  Sensor -> Receptor ++ : Transmitir leitura
   Receptor -> Area ++ : processarLeitura(leitura)
   Area -> Area : avaliarNivelPerigo()
   opt Risco Detectado
+    create "alerta1:AlertaSensor" as Alerta
     Area -> Alerta ++ : criarAlerta(dadosLeitura)
-    Alerta -> DB ++ : salvar()
+    Alerta -> DB ++ : Salvar registro
     deactivate DB
     deactivate Alerta
   end
@@ -30,8 +31,8 @@ else Cenário de Exceção I: Falha de Comunicação
   Receptor -> Receptor : gerarAlertaFalha(ultimoDado)
   Receptor -> UI ++ : Exibir alerta de falha
   deactivate UI
-  Gestor -> UI ++ : tentarReconectar()
-  UI -> Sensor ++ : restabelecerComunicacao()
+  Gestor -> UI ++ : Tentar reconectar
+  UI -> Sensor ++ : Solicitar conexão
   Sensor --> UI -- : falha/sucesso
   deactivate UI
   deactivate Receptor
@@ -40,7 +41,7 @@ end
 == Monitoramento ==
 Gestor -> UI ++ : Acessar monitoramento
 UI -> Alerta ++ : buscarAlertasAtivos()
-Alerta -> DB ++ : Consultar alertas não lidos: SELECT * FROM AlertaSensor WHERE lidoPeloGestor = false
+Alerta -> DB ++ : Consultar alertas não lidos
 DB --> Alerta -- : lista<AlertaSensor>
 Alerta --> UI -- : listaFormatada
 UI --> Gestor -- : Exibir Alertas
@@ -48,7 +49,7 @@ UI --> Gestor -- : Exibir Alertas
 opt Cenário Alternativo I: Filtrar Alertas
   Gestor -> UI ++ : Acionar painel de filtros (nível, sensor)
   UI -> Alerta ++ : filtrarAlertas(criterio)
-  Alerta -> DB ++ : Consultar por filtro: buscarPorFiltro(criterio)
+  Alerta -> DB ++ : Consultar por filtro
   DB --> Alerta -- : listaFiltrada
   Alerta --> UI -- : novaLista
   UI --> Gestor -- : Atualizar listagem exibida

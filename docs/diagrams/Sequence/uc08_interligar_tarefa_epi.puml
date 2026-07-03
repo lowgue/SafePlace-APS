@@ -8,21 +8,21 @@ skinparam maxmessagesize 120
 
 actor ":GestorDeSeguranca" as Gestor
 boundary ":ModuloTarefas" as UI
-entity ":Tarefa" as Tarefa
-entity ":EPI" as EPI
 database ":BancoDeDados" as DB
 
 == Fluxo Principal: Interligação ==
 Gestor -> UI ++ : Acessar módulo
+create "tarefa1:Tarefa" as Tarefa
 UI -> Tarefa ++ : buscarTarefas()
-Tarefa -> DB ++ : SELECT * FROM Tarefa
+Tarefa -> DB ++ : Consultar tarefas
 DB --> Tarefa -- : lista
 Tarefa --> UI -- : dadosExibicao
 UI --> Gestor -- : Exibir tarefas
 
 Gestor -> UI ++ : Selecionar tarefa
+create "epi1:EPI" as EPI
 UI -> EPI ++ : listarDisponiveis()
-EPI -> DB ++ : buscarTodos()
+EPI -> DB ++ : Buscar EPIs
 DB --> EPI -- : lista
 EPI --> UI -- : dadosExibicao
 UI --> Gestor -- : Mostrar EPIs disponíveis
@@ -32,7 +32,7 @@ UI -> Tarefa ++ : vincularEPIs(listaEPIs)
 Tarefa -> EPI ++ : verificarValidadeCA()
 EPI --> Tarefa -- : ok
 Tarefa -> Tarefa : validarAlocacaoFuncionario()
-Tarefa -> DB ++ : salvarMatrizRisco(Tarefa, EPIs)
+Tarefa -> DB ++ : Salvar matriz de risco
 DB --> Tarefa -- : ok
 Tarefa --> UI -- : sucesso
 UI --> Gestor -- : Associação confirmada
@@ -40,7 +40,7 @@ UI --> Gestor -- : Associação confirmada
 == Cenário Alternativo I: Desvincular EPI ==
 Gestor -> UI ++ : Remover vínculo de EPI
 UI -> Tarefa ++ : desvincularEPI(idEPI)
-Tarefa -> DB ++ : atualizarMatrizRisco()
+Tarefa -> DB ++ : Atualizar matriz de risco
 DB --> Tarefa -- : ok
 Tarefa --> UI -- : sucesso
 UI --> Gestor -- : Associação removida
