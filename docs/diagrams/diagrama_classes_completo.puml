@@ -70,7 +70,7 @@ together {
     - conformidade: boolean
     - observacoes: String
     --
-    + carregarDetalhes()
+    + obterDadosCompletos()
   }
   class GestorDeSeguranca {
     - email: String
@@ -90,7 +90,7 @@ together {
     --
     + criarPlano(dados)
     + atualizar(novosDados)
-    + carregarFormulario()
+    + obterDadosParaEdicao()
   }
 }
 
@@ -115,7 +115,7 @@ together {
     - mensagem: String
     - lidoPeloGestor: boolean
     --
-    + criarAlerta(dados)
+    + criarAlerta(dadosLeitura)
     + buscarAlertasAtivos()
     + filtrarAlertas(criterio)
   }
@@ -164,7 +164,7 @@ together {
     + executarBuscaDeCaminho()
     + calcularTempoEstimado()
     + identificarGargalos()
-    + recolocarRotas()
+    + recalcularRotas()
     + gerarComparativoRealESimulado()
   }
   class RotaSaida {
@@ -232,7 +232,7 @@ together {
     - local: String
     - descricao: String
     --
-    + carregarDetalhes()
+    + obterDadosCompletos()
     + vincularAnexos()
     + desvincularItem(idItem)
     + validarJustificativa(justificativa)@@
@@ -312,14 +312,14 @@ together {
     - situacao: String
     - motivo: String
     --
-    + atualizarQuantidadeMov()
+    + atualizarQuantidadeMovimentada()
   }
   class Estoque {
     - quantAtual: int
     - quantMinima: int
     - localizacao: String
     --
-    + compararComQuantMinima()
+    + compararComQuantidadeMinima()
     + validarCustoHistoricoConsumo()
   }
   class ProjecaoSubstituicao {

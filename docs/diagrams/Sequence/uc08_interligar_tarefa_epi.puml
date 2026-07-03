@@ -6,56 +6,56 @@ skinparam defaultFontSize 14
 skinparam roundcorner 10
 skinparam maxmessagesize 120
 
-actor "GestorDeSeguranca" as Gestor
-participant "Módulo Tarefas" as UI
-participant "Tarefa" as Tarefa
-participant "EPI" as EPI
-database "Banco de Dados" as DB
+actor ":GestorDeSeguranca" as Gestor
+boundary ":ModuloTarefas" as UI
+entity ":Tarefa" as Tarefa
+entity ":EPI" as EPI
+database ":BancoDeDados" as DB
 
 == Fluxo Principal: Interligação ==
-Gestor -> UI : Acessar módulo
-UI -> Tarefa : buscarTarefas()
-Tarefa -> DB : SELECT * FROM Tarefa
-DB --> Tarefa : lista
-Tarefa --> UI : dadosExibicao
-UI --> Gestor : Exibir tarefas
+Gestor -> UI ++ : Acessar módulo
+UI -> Tarefa ++ : buscarTarefas()
+Tarefa -> DB ++ : SELECT * FROM Tarefa
+DB --> Tarefa -- : lista
+Tarefa --> UI -- : dadosExibicao
+UI --> Gestor -- : Exibir tarefas
 
-Gestor -> UI : Selecionar tarefa
-UI -> EPI : listarDisponiveis()
-EPI -> DB : buscarTodos()
-DB --> EPI : lista
-EPI --> UI : dadosExibicao
-UI --> Gestor : Mostrar EPIs disponíveis
+Gestor -> UI ++ : Selecionar tarefa
+UI -> EPI ++ : listarDisponiveis()
+EPI -> DB ++ : buscarTodos()
+DB --> EPI -- : lista
+EPI --> UI -- : dadosExibicao
+UI --> Gestor -- : Mostrar EPIs disponíveis
 
-Gestor -> UI : Selecionar EPIs e confirmar associação
-UI -> Tarefa : vincularEPIs(listaEPIs)
-Tarefa -> EPI : verificarValidadeCA()
-EPI --> Tarefa : ok
+Gestor -> UI ++ : Selecionar EPIs e confirmar associação
+UI -> Tarefa ++ : vincularEPIs(listaEPIs)
+Tarefa -> EPI ++ : verificarValidadeCA()
+EPI --> Tarefa -- : ok
 Tarefa -> Tarefa : validarAlocacaoFuncionario()
-Tarefa -> DB : salvarMatrizRisco(Tarefa, EPIs)
-DB --> Tarefa : ok
-Tarefa --> UI : sucesso
-UI --> Gestor : Associação confirmada
+Tarefa -> DB ++ : salvarMatrizRisco(Tarefa, EPIs)
+DB --> Tarefa -- : ok
+Tarefa --> UI -- : sucesso
+UI --> Gestor -- : Associação confirmada
 
 == Cenário Alternativo I: Desvincular EPI ==
-Gestor -> UI : Remover vínculo de EPI
-UI -> Tarefa : desvincularEPI(idEPI)
-Tarefa -> DB : atualizarMatrizRisco()
-DB --> Tarefa : ok
-Tarefa --> UI : sucesso
-UI --> Gestor : Associação removida
+Gestor -> UI ++ : Remover vínculo de EPI
+UI -> Tarefa ++ : desvincularEPI(idEPI)
+Tarefa -> DB ++ : atualizarMatrizRisco()
+DB --> Tarefa -- : ok
+Tarefa --> UI -- : sucesso
+UI --> Gestor -- : Associação removida
 
 == Cenário de Exceção I: EPI Inválido/Vencido ==
-Gestor -> UI : Selecionar EPI e confirmar
-UI -> Tarefa : vincularEPIs(listaEPIs)
-Tarefa -> EPI : verificarValidadeCA()
-EPI --> Tarefa : invalido
-Tarefa --> UI : erroValidacao
-UI --> Gestor : Exibir erro (EPI inválido)
+Gestor -> UI ++ : Selecionar EPI e confirmar
+UI -> Tarefa ++ : vincularEPIs(listaEPIs)
+Tarefa -> EPI ++ : verificarValidadeCA()
+EPI --> Tarefa -- : invalido
+Tarefa --> UI -- : erroValidacao
+UI --> Gestor -- : Exibir erro (EPI inválido)
 
 == Cenário de Exceção II: Tarefa sem EPI ==
-Gestor -> UI : Salvar tarefa crítica sem EPI
-UI -> Tarefa : validarEPIsObrigatorios()
-Tarefa --> UI : erroValidacao (obrigatório)
-UI --> Gestor : Exibir erro (Exige EPI)
+Gestor -> UI ++ : Salvar tarefa crítica sem EPI
+UI -> Tarefa ++ : validarEPIsObrigatorios()
+Tarefa --> UI -- : erroValidacao (obrigatório)
+UI --> Gestor -- : Exibir erro (Exige EPI)
 @enduml
